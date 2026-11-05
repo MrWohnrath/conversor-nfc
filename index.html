@@ -1,0 +1,117 @@
+Attempting to perform the InitializeDefaultDrives operation on the 'FileSystem' provider failed.
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="Converta códigos NFC de hexadecimal para decimal invertendo a ordem dos bytes.">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <title>Conversor NFC · Hexadecimal para decimal</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1220; --panel:#111b2d; --line:#26354d; --muted:#9aabc2; --text:#eff5ff; --accent:#71e0bd; --blue:#91b9ff; }
+    * { box-sizing:border-box }
+    body { margin:0; min-height:100vh; padding:32px 18px; display:grid; place-items:center; background:radial-gradient(ellipse at 50% 0%,#1b2d49 0,var(--bg) 55%); color:var(--text); font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif }
+    main { width:min(100%,620px) }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:24px; color:var(--muted); font-size:13px; letter-spacing:.09em; text-transform:uppercase }
+    .icon { width:40px;height:40px;display:grid;place-items:center;border:1px solid #35516b;border-radius:12px;color:var(--accent);font-size:20px }
+    h1 { margin:0 0 8px; font-size:clamp(27px,6vw,36px); line-height:1.15; letter-spacing:-.035em }
+    .intro { margin:0 0 26px; color:var(--muted) }
+    .card { padding:24px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(145deg,rgba(20,33,53,.97),rgba(15,24,40,.97)); box-shadow:0 20px 70px #0005 }
+    label { display:block; margin-bottom:9px; font-weight:650 }
+    .input-wrap { position:relative }
+    input { width:100%; padding:15px 48px 15px 15px; border:1px solid #364861; border-radius:11px; outline:none; background:#0b1423; color:var(--text); font:600 18px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.04em }
+    input:focus { border-color:var(--blue); box-shadow:0 0 0 3px #91b9ff20 }
+    input[aria-invalid="true"] { border-color:#ff8585 }
+    .clear { position:absolute;right:8px;top:8px;width:36px;height:36px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:20px;cursor:pointer }
+    .clear:hover { background:#ffffff12;color:var(--text) }
+    .hint,.error { min-height:22px;margin:8px 0 0;color:var(--muted);font-size:13px }
+    .error { color:#ff9a9a }
+    .arrow { margin:14px 0; display:flex; align-items:center; gap:12px; color:var(--muted);font-size:13px }
+    .arrow::before,.arrow::after { content:"";height:1px;flex:1;background:var(--line) }
+    .result { padding:17px; border:1px solid #2d604f; border-radius:12px; background:#10251f }
+    .result-label { color:#a5cabb;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase }
+    .bytes { margin-top:7px;color:var(--accent);font:600 19px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere }
+    .decimal-head { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:19px }
+    .decimal-head span { color:var(--muted);font-size:13px }
+    .copy { padding:8px 12px;border:1px solid #405674;border-radius:8px;background:#17263a;color:var(--text);font-weight:600;cursor:pointer }
+    .copy:hover:not(:disabled) { border-color:var(--blue) }
+    .copy:disabled { opacity:.45;cursor:default }
+    .decimal { min-height:38px;margin-top:5px;color:var(--blue);font:700 clamp(23px,6vw,31px)/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere }
+    .foot { margin:18px 3px 0;color:#8091a8;font-size:12px }
+    @media(max-width:440px){.card{padding:19px}.decimal-head{align-items:flex-start}.copy{white-space:nowrap}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><div class="icon" aria-hidden="true">⌁</div>Ferramenta local · NFC</div>
+    <h1>Conversor de código NFC</h1>
+    <p class="intro">Inverta a ordem dos bytes e converta o código hexadecimal para decimal.</p>
+    <section class="card" aria-label="Conversor hexadecimal para decimal">
+      <label for="hexInput">Código lido pelo dispositivo</label>
+      <div class="input-wrap">
+        <input id="hexInput" type="text" placeholder="Ex.: 6D:B0:0F:D4" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="hint error">
+        <button class="clear" id="clearBtn" type="button" aria-label="Limpar campo" title="Limpar">×</button>
+      </div>
+      <p class="hint" id="hint">Aceita bytes separados por dois-pontos, espaços ou hífens.</p>
+      <p class="error" id="error" role="alert"></p>
+      <div class="arrow" aria-hidden="true">inverter bytes e converter</div>
+      <div class="result" aria-live="polite">
+        <div class="result-label">Ordem invertida</div>
+        <div class="bytes" id="reversed">D4:0F:B0:6D</div>
+        <div class="decimal-head"><span>Resultado decimal</span><button class="copy" id="copyBtn" type="button">Copiar</button></div>
+        <div class="decimal" id="decimal">3557797997</div>
+      </div>
+    </section>
+    <p class="foot">O processamento acontece somente neste navegador. Nenhum código é enviado pela internet.</p>
+  </main>
+  <script>
+    const input = document.querySelector('#hexInput');
+    const reversed = document.querySelector('#reversed');
+    const decimal = document.querySelector('#decimal');
+    const error = document.querySelector('#error');
+    const copyBtn = document.querySelector('#copyBtn');
+
+    function convert() {
+      const raw = input.value.trim();
+      if (!raw) {
+        input.setAttribute('aria-invalid', 'false');
+        error.textContent = '';
+        reversed.textContent = '—'; decimal.textContent = '—'; copyBtn.disabled = true;
+        return;
+      }
+      const compact = raw.replace(/[\s:-]/g, '');
+      if (!/^[\da-f]+$/i.test(compact)) return invalid('Use apenas caracteres hexadecimais (0–9, A–F) e separadores.');
+      if (compact.length % 2 !== 0) return invalid('O código precisa ter uma quantidade par de dígitos (bytes completos).');
+      const bytes = compact.match(/.{2}/g);
+      const reversedBytes = bytes.reverse();
+      const normalized = reversedBytes.join(':').toUpperCase();
+      // BigInt mantém a precisão inclusive para códigos NFC maiores que 32 bits.
+      const number = BigInt('0x' + reversedBytes.join(''));
+      input.setAttribute('aria-invalid', 'false'); error.textContent = '';
+      reversed.textContent = normalized;
+      decimal.textContent = number.toString(10);
+      copyBtn.disabled = false;
+    }
+    function invalid(message) {
+      input.setAttribute('aria-invalid', 'true'); error.textContent = message;
+      reversed.textContent = '—'; decimal.textContent = '—'; copyBtn.disabled = true;
+    }
+    input.addEventListener('input', convert);
+    document.querySelector('#clearBtn').addEventListener('click', () => { input.value = ''; input.focus(); convert(); });
+    copyBtn.addEventListener('click', async () => {
+      try {
+        if (window.AndroidClipboard) window.AndroidClipboard.copy(decimal.textContent);
+        else await navigator.clipboard.writeText(decimal.textContent);
+        copyBtn.textContent = 'Copiado!';
+        setTimeout(() => copyBtn.textContent = 'Copiar', 1400);
+      } catch {
+        copyBtn.textContent = 'Selecione o número';
+        setTimeout(() => copyBtn.textContent = 'Copiar', 1800);
+      }
+    });
+    convert();
+  </script>
+</body>
+</html>
+
