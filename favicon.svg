@@ -1,0 +1,12 @@
+Attempting to perform the InitializeDefaultDrives operation on the 'FileSystem' provider failed.
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="38" fill="#0b1220"/>
+  <rect x="31" y="30" width="130" height="132" rx="36" fill="none" stroke="#30455d" stroke-width="2.5"/>
+  <g fill="none" stroke-linecap="round" stroke-width="6">
+    <path d="M58 44C25 63 25 129 58 148M134 44c33 19 33 85 0 104" stroke="#69e7c5"/>
+    <path d="M76 60c-24 16-24 56 0 72m40-72c24 16 24 56 0 72" stroke="#79efd0"/>
+    <path d="M91 76c-12 8-12 32 0 40m10-40c12 8 12 32 0 40" stroke="#69e7c5"/>
+    <path d="M100 84c-9 6-9 18 0 24m-8-24c9 6 9 18 0 24" stroke="#81f2d1" stroke-width="5"/>
+  </g>
+</svg>
+
